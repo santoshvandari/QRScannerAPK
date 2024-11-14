@@ -3,6 +3,7 @@
         android:label="qr_code_scanner"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <user-permission android:name="android.permission.CAMERA"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
