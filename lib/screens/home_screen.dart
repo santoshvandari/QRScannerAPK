@@ -2,28 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qr_code_scanner/screens/qr_scanner_screen.dart';
-import 'dart:io';
 import 'result_screen.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   // Method to scan QR code from the gallery
   Future<void> _pickImageFromGallery(BuildContext context) async {
-    final MobileScannerController _controller = MobileScannerController();
+    final MobileScannerController controller = MobileScannerController();
     final pickedImage =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       // Decode the QR code from the image
-      // final result = await MobileScanner.scanImage(File(pickedImage.path));
-      final result = await _controller.analyzeImage(pickedImage.path);
+      final result = await controller.analyzeImage(pickedImage.path);
       if (result != null) {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ResultScreen(
-                data:
-                    result?.barcodes?.firstOrNull?.rawValue ?? "No data found"),
+                data: result.barcodes.first.rawValue ?? "No data found"),
           ),
         );
       }
@@ -31,32 +28,57 @@ class HomeScreen extends StatelessWidget {
   }
 
   // Method to navigate to the camera scanner screen
-  void _scanQRCode(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const QRScannerScreen(),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('QR Code Scanner')),
+      appBar: AppBar(
+        title: const Text('QR Code Scanner'),
+        centerTitle: true,
+        backgroundColor: Colors.blueAccent,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      const HomeScreen()), // Navigate to HomeScreen
+            );
+          },
+        ),
+      ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () => _scanQRCode(context),
-              child: const Text('Scan QR Code from Camera'),
-            ),
-            ElevatedButton(
-              onPressed: () => _pickImageFromGallery(context),
-              child: const Text('Upload QR Code from Gallery'),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(
+                width: 250, // Set your desired width
+                height: 250, // Set your desired height to make it a square
+                child: QRScannerScreen(),
+              ),
+
+              const SizedBox(height: 40),
+
+              // Gallery Upload Button
+              ElevatedButton(
+                onPressed: () => _pickImageFromGallery(context),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.blueAccent,
+                  padding: const EdgeInsets.all(20),
+                  shape: const CircleBorder(),
+                  elevation: 10,
+                ),
+                child: const Icon(
+                  Icons.image,
+                  size: 50,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
