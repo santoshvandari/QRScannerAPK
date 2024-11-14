@@ -147,18 +147,6 @@ class _QRScannerScreenState extends State<QRScannerScreen>
               ),
             ),
           ),
-
-          // Back button to go back to the HomeScreen
-          Positioned(
-            top: 40,
-            left: 20,
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ),
         ],
       ),
     );
