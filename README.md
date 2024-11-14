@@ -8,6 +8,12 @@ This is a simple Flutter application that allows users to scan QR codes using th
 - **Gallery QR Code Scanning**: Choose an image from the gallery and scan QR codes from the selected image.
 - **Responsive UI**: The user interface adapts dynamically to different screen sizes.
 
+## Screenshots
+
+![Home Screen](ScreenShots/Home_Screen.png)
+
+*Home Screen with QR scanner options.*
+
 ## Installation
 
 1. Clone the repository to your local machine:
@@ -48,12 +54,6 @@ For Android, ensure that the following permissions are added in the `AndroidMani
 <uses-permission android:name="android.permission.CAMERA" />
 ```
 
-
-## Screenshots
-
-![Home Screen](ScreenShots/Home_Screen.png)
-
-*Home Screen with QR scanner options.*
 
 ## Packages Used
 
