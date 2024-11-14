@@ -51,11 +51,9 @@ For Android, ensure that the following permissions are added in the `AndroidMani
 
 ## Screenshots
 
-![Home Screen](screenshots/home_screen.png)
-*Home Screen with QR scanner options.*
+![Home Screen](ScreenShots/Home_Screen.png)
 
-![Gallery Picker](screenshots/gallery_picker.png)
-*Select an image from the gallery to scan QR codes.*
+*Home Screen with QR scanner options.*
 
 ## Packages Used
 
