@@ -9,75 +9,131 @@ class QRScannerScreen extends StatefulWidget {
   _QRScannerScreenState createState() => _QRScannerScreenState();
 }
 
-class _QRScannerScreenState extends State<QRScannerScreen> {
+class _QRScannerScreenState extends State<QRScannerScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  bool isScanned = false; // Track if a code has been scanned
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize animation controller for the scanning line
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _onDetect(BarcodeCapture barcodeCapture) {
+    // Check if barcode is detected and avoid multiple scans
+    if (!isScanned && barcodeCapture.barcodes.isNotEmpty) {
+      setState(() {
+        isScanned = true;
+      });
+      final String code = barcodeCapture.barcodes.first.rawValue!;
+      // Navigate to result screen with scanned data
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResultScreen(data: code),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // MobileScanner for QR code scanning
+          // MobileScanner to capture QR codes
           MobileScanner(
-            onDetect: (barcodeCapture) {
-              if (barcodeCapture.barcodes.isNotEmpty) {
-                final String code = barcodeCapture.barcodes.first.rawValue!;
-                Navigator.pop(context); // Go back to home
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ResultScreen(data: code),
-                  ),
-                );
-              }
-            },
+            onDetect: _onDetect,
           ),
 
-          // Focus box overlay
+          // Overlay with focused scanning box and animation
           Center(
-            child: Container(
-              width: 250,
-              height: 250,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.7),
-                  width: 2,
+            child: Stack(
+              children: [
+                // Semi-transparent overlay with transparent square
+                Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  color: Colors.black.withOpacity(0.6),
                 ),
-              ),
-              child: const Stack(
-                children: [
-                  // Highlighted corners
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    child:
-                        Icon(Icons.crop_square, size: 28, color: Colors.white),
+                // Transparent square in the center for the scanning focus
+                Center(
+                  child: Container(
+                    width: 250,
+                    height: 250,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.8),
+                        width: 2,
+                      ),
+                    ),
+                    child: Stack(
+                      children: [
+                        // Scanning line animation inside the focus box
+                        AnimatedBuilder(
+                          animation: _animationController,
+                          builder: (context, child) {
+                            return Positioned(
+                              top: _animationController.value * 250,
+                              left: 0,
+                              right: 0,
+                              child: Container(
+                                height: 2,
+                                color: Colors.red.withOpacity(0.8),
+                              ),
+                            );
+                          },
+                        ),
+                        // Highlighted corners to emphasize the scan area
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          child: Icon(Icons.crop_square,
+                              size: 28, color: Colors.white.withOpacity(0.8)),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: Icon(Icons.crop_square,
+                              size: 28, color: Colors.white.withOpacity(0.8)),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          child: Icon(Icons.crop_square,
+                              size: 28, color: Colors.white.withOpacity(0.8)),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Icon(Icons.crop_square,
+                              size: 28, color: Colors.white.withOpacity(0.8)),
+                        ),
+                      ],
+                    ),
                   ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child:
-                        Icon(Icons.crop_square, size: 28, color: Colors.white),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    child:
-                        Icon(Icons.crop_square, size: 28, color: Colors.white),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child:
-                        Icon(Icons.crop_square, size: 28, color: Colors.white),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
 
-          // Instruction text
+          // Instruction text positioned below the scanning area
           const Positioned(
-            bottom: 80,
+            bottom: 100,
             left: 0,
             right: 0,
             child: Center(
@@ -89,6 +145,18 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   fontWeight: FontWeight.w500,
                 ),
               ),
+            ),
+          ),
+
+          // Back button to go back to the HomeScreen
+          Positioned(
+            top: 40,
+            left: 20,
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context);
+              },
             ),
           ),
         ],

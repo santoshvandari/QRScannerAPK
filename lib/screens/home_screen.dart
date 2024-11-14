@@ -54,10 +54,11 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(
-                width: 250, // Set your desired width
-                height: 250, // Set your desired height to make it a square
-                child: QRScannerScreen(),
+              SizedBox(
+                width: MediaQuery.of(context).size.width - 50, // Dynamic width
+                height: MediaQuery.of(context).size.width -
+                    50, // Dynamic height, making it a square
+                child: const QRScannerScreen(),
               ),
 
               const SizedBox(height: 40),
